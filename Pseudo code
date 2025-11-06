@@ -1,0 +1,1369 @@
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+from warnings import filterwarnings
+filterwarnings('ignore')
+ 
+# Load dataset
+df = pd.read_csv('Sonar Dataset.csv')
+ 
+# Preview the dataset
+df.head()
+df.head(10)
+df.tail()
+df.tail(10)
+ 
+# Inspect data structure
+df.columns
+df.dtypes
+df.info()
+df.describe()
+df.describe().T
+df.nunique()
+df.index
+df.shape
+df.memory_usage()
+df.sample(10)
+ 
+# Analyze label distribution (assuming last column is label)
+df.iloc[:, 60].value_counts()
+ 
+# Check for missing values
+df.isnull()
+df.isnull().sum()
+df.notnull()
+df.notnull().sum()
+df.isna().sum()
+ 
+# Plot histogram of a feature
+df['Feature_1'].plot(kind='hist', bins=20, title='Feature_1')
+plt.gca().spines[['top', 'right']].set_visible(False)
+ 
+# Scatter plot between two features
+df.plot(kind='scatter', x='Feature_2', y='Feature_3', s=32, alpha=0.8)
+plt.gca().spines[['top', 'right']].set_visible(False)
+ 
+# Define custom time series plot function
+def _plot_series(series, series_name, series_index=0):
+   palette = list(sns.palettes.mpl_palette('Dark2'))
+   xs = series['Feature_24']
+   ys = series['Feature_1']
+   
+   plt.plot(xs, ys)
+   plt.title(series_name)
+   plt.xlabel("Feature_24")
+   plt.ylabel("Feature_1")
+# Sort data by a feature and plot time series
+df_sorted = df.sort_values('Feature_24', ascending=True)
+_plot_series(df_sorted, '')  # Custom function defined earlier
+ 
+# Stem Plot for Feature_1
+plt.stem(df['Feature_1'])
+plt.xlabel("Index")
+plt.ylabel("Feature_1 Value")
+plt.title("Stem Plot of Feature_1")
+plt.show()
+ 
+# Violin Plot for Feature_1
+plt.figure(figsize=(8, 6))
+sns.violinplot(x=df['Feature_1'])
+plt.title('Violin Plot of Feature_1')
+plt.xlabel('Feature_1')
+plt.show()
+ 
+# Stack Plot of multiple features
+plt.figure(figsize=(10, 6))
+plt.stackplot(df.index, df['Feature_1'], df['Feature_2'], df['Feature_3'],
+             labels=['Feature_1', 'Feature_2', 'Feature_3'])
+plt.xlabel("Index")
+plt.ylabel("Feature Value")
+plt.title("Stack Plot of Features")
+plt.legend(loc='upper left')
+plt.show()
+ 
+# Hexagonal Binning Plot for 2D density
+plt.figure(figsize=(10, 6))
+sns.jointplot(x='Feature_1', y='Feature_2', data=df, kind='hex')
+plt.show()
+ 
+# Rug Plot of Feature_1 using Plotly
+fig = px.histogram(df, x="Feature_1", marginal="rug")
+fig.show()
+ 
+# Empirical Cumulative Distribution Function (ECDF)
+def ecdf(data):
+   n = len(data)
+   x = np.sort(data)
+   y = np.arange(1, n + 1) / n
+   return x, y
+ 
+x, y = ecdf(df['Feature_1'])
+plt.plot(x, y, marker='.', linestyle='none')
+plt.xlabel('Feature_1')
+plt.ylabel('ECDF')
+plt.title('Empirical CDF of Feature_1')
+plt.margins(0.02)
+plt.show()
+ 
+# Streamlines Plot (vector field)
+x = np.linspace(df['Feature_1'].min(), df['Feature_1'].max(), 50)
+y = np.linspace(df['Feature_2'].min(), df['Feature_2'].max(), 50)
+X, Y = np.meshgrid(x, y)
+u = -Y
+v = X
+plt.streamplot(X, Y, u, v, density=[0.5, 1])
+plt.xlabel('Feature_1')
+plt.ylabel('Feature_2')
+plt.title('Streamlines Plot of Feature_1 vs Feature_2')
+plt.show()
+ 
+# Regression Plot
+sns.regplot(x='Feature_1', y='Feature_2', data=df)
+plt.xlabel('Feature_1')
+plt.ylabel('Feature_2')
+plt.title('Regression Plot of Feature_1 vs Feature_2')
+plt.show()
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Sonar Rock or Mine Prediction with Login</title>
+
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+  * {
+
+    box-sizing: border-box;
+
+  }
+
+  html, body {
+
+    margin: 0; padding: 0; height: 100%;
+
+    font-family: 'Poppins', sans-serif;
+
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+
+    overflow: hidden;
+
+  }
+
+  body, #root {
+
+    height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+  }
+
+  #root {
+
+    width: 100%;
+
+    max-width: 960px;
+
+    padding: 20px;
+
+  }
+
+  /* Auth container styles */
+
+  .container {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    perspective: 1500px;
+
+    margin-bottom: 30px;
+
+  }
+
+  .card {
+
+    width: 420px;
+
+    max-width: 100%;
+
+    background: rgba(8, 32, 50, 0.95);
+
+    border-radius: 20px;
+
+    box-shadow:
+
+      0 15px 40px rgba(0, 0, 0, 0.8),
+
+      0 0 25px #2196f3;
+
+    color: #e1e8f2;
+
+    position: relative;
+
+    transform-style: preserve-3d;
+
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+
+    min-height: 420px;
+
+  }
+
+  .card.flipped {
+
+    transform: rotateY(180deg);
+
+  }
+
+  .side {
+
+    padding: 40px 36px 44px;
+
+    backface-visibility: hidden;
+
+    position: absolute;
+
+    width: 100%;
+
+    height: 100%;
+
+    top: 0; left: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    overflow-y: auto;
+
+    box-sizing: border-box;
+
+  }
+
+  .front {
+
+    background: linear-gradient(135deg, #1565c0, #42a5f5);
+
+    border-radius: 20px;
+
+    box-shadow: inset 0 0 30px #2962ff88;
+
+  }
+
+  .back {
+
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+
+    border-radius: 20px;
+
+    transform: rotateY(180deg);
+
+    box-shadow: inset 0 0 30px #224d8acc;
+
+  }
+
+  .title {
+
+    font-size: 2rem;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 30px;
+
+    user-select: none;
+
+    text-align: center;
+
+    text-shadow: 0 0 12px rgba(255 255 255 / 0.4);
+
+    flex-shrink: 0;
+
+  }
+
+  .form-group {
+
+    width: 100%;
+
+    margin-bottom: 26px;
+
+    flex-shrink: 0;
+
+  }
+
+  label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 700;
+
+    font-size: 1.1rem;
+
+    color: #e3f2fddd;
+
+    user-select: none;
+
+  }
+
+  input[type="text"],
+
+  input[type="email"],
+
+  input[type="password"] {
+
+    width: 100%;
+
+    padding: 16px 20px;
+
+    border-radius: 18px;
+
+    border: none;
+
+    background: rgba(255 255 255 / 0.18);
+
+    color: #e3f2fd;
+
+    font-size: 1.1rem;
+
+    font-weight: 700;
+
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+
+    font-family: 'Poppins', sans-serif;
+
+  }
+
+  input[type="text"]:focus,
+
+  input[type="email"]:focus,
+
+  input[type="password"]:focus {
+
+    outline: none;
+
+    background: rgba(255 255 255 / 0.35);
+
+    box-shadow: 0 0 18px #90caf9;
+
+    color: #e3f2fd;
+
+  }
+
+  .btn {
+
+    margin-top: 14px;
+
+    width: 100%;
+
+    padding: 18px 0;
+
+    border-radius: 28px;
+
+    border: none;
+
+    cursor: pointer;
+
+    font-weight: 800;
+
+    font-size: 1.3rem;
+
+    background: radial-gradient(circle at top left, #42a5f5, #1565c0);
+
+    color: #e1e8f2;
+
+    box-shadow: 0 8px 20px #42a5f5cc;
+
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+
+    user-select: none;
+
+    font-family: 'Poppins', sans-serif;
+
+    flex-shrink: 0;
+
+  }
+
+  .btn:hover {
+
+    background: radial-gradient(circle at bottom right, #64b5f6, #1e88e5);
+
+    box-shadow: 0 12px 28px #64b5f6ee;
+
+  }
+
+  .toggle-link {
+
+    margin-top: 24px;
+
+    color: #bbdefbcc;
+
+    font-weight: 700;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    text-decoration: underline;
+
+    letter-spacing: 0.7px;
+
+    transition: color 0.3s ease;
+
+    flex-shrink: 0;
+
+    outline: none;
+
+  }
+
+  .toggle-link:hover,
+
+  .toggle-link:focus {
+
+    color: #ffffffdd;
+
+  }
+
+  .message {
+
+    margin-top: 14px;
+
+    min-height: 24px;
+
+    font-weight: 700;
+
+    font-size: 1rem;
+
+    user-select: none;
+
+    text-align: center;
+
+    flex-shrink: 0;
+
+  }
+
+  .error-msg {
+
+    color: #ff6e6e;
+
+  }
+
+  .success-msg {
+
+    color: #90ee90;
+
+  }
+
+ 
+
+  /* Sonar prediction app styles */
+
+  #predictionApp {
+
+    background: rgba(0,0,0,0.65);
+
+    border-radius: 14px;
+
+    padding: 20px 24px 24px;
+
+    box-shadow: 0 0 32px rgba(0,0,0,0.7);
+
+    color: #edf2f4;
+
+    max-height: 600px;
+
+    overflow: hidden;
+
+  }
+
+  #predictionApp h1 {
+
+    font-weight: 700;
+
+    font-size: 1.8rem;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    margin: 0 0 16px 0;
+
+    text-align: center;
+
+    color: #90caf9;
+
+    text-shadow: 0 0 6px #90caf9bb;
+
+  }
+
+  form#featuresForm {
+
+    flex-grow: 1;
+
+    display: grid;
+
+    grid-template-columns: repeat(10, 1fr);
+
+    gap: 12px 14px;
+
+    max-height: 450px;
+
+    overflow-y: auto;
+
+    padding-bottom: 10px;
+
+    scrollbar-width: thin;
+
+    scrollbar-color: #90caf9 #203a43;
+
+    margin-bottom: 12px;
+
+  }
+
+  form#featuresForm::-webkit-scrollbar {
+
+    width: 8px;
+
+  }
+
+  form#featuresForm::-webkit-scrollbar-track {
+
+    background: #203a43;
+
+    border-radius: 6px;
+
+  }
+
+  form#featuresForm::-webkit-scrollbar-thumb {
+
+    background-color: #90caf9aa;
+
+    border-radius: 6px;
+
+    border: 2px solid #203a43;
+
+  }
+
+  input.feature-input {
+
+    width: 100%;
+
+    padding: 8px 10px;
+
+    border-radius: 10px;
+
+    border: none;
+
+    font-size: 1rem;
+
+    font-weight: 600;
+
+    text-align: center;
+
+    background: #142b44;
+
+    color: #dbe9ff;
+
+    transition: box-shadow 0.3s ease, background 0.3s ease;
+
+    font-variant-numeric: tabular-nums;
+
+  }
+
+  input.feature-input:focus {
+
+    outline: none;
+
+    background: #1e3a6e;
+
+    box-shadow: 0 0 8px #90caf9cc;
+
+  }
+
+  #predictBtn {
+
+    background: #4da6ff;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 14px;
+
+    font-size: 1.1rem;
+
+    font-weight: 700;
+
+    color: #fff;
+
+    cursor: pointer;
+
+    width: 100%;
+
+    user-select: none;
+
+    transition: background-color 0.3s ease;
+
+  }
+
+  #predictBtn:hover:not(:disabled) {
+
+    background: #3399ff;
+
+  }
+
+  #predictBtn:disabled {
+
+    background: #2a3a55;
+
+    cursor: not-allowed;
+
+  }
+
+  #countdown {
+
+    margin-top: 12px;
+
+    font-size: 1.2rem;
+
+    color: #ffd54f;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    min-height: 24px;
+
+    text-shadow:
+
+      0 0 6px #ffd54f,
+
+      0 0 12px #ffd54f88;
+
+  }
+
+  #progressbar {
+
+    height: 5px;
+
+    width: 100%;
+
+    background: #203a43;
+
+    border-radius: 10px;
+
+    margin-top: 6px;
+
+    overflow: hidden;
+
+  }
+
+  #progressbar > div {
+
+    height: 100%;
+
+    width: 0%;
+
+    background: linear-gradient(270deg, #ffca28, #ffb300);
+
+    border-radius: 10px;
+
+    transition: width 1s linear;
+
+  }
+
+  #result {
+
+    margin-top: 18px;
+
+    font-size: 1.5rem;
+
+    font-weight: 900;
+
+    text-align: center;
+
+    color: #90ee90;
+
+    opacity: 0;
+
+    transform: translateY(15px);
+
+    transition: opacity 0.6s ease, transform 0.6s ease;
+
+    user-select: none;
+
+  }
+
+  #result.show {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <div id="root">
+
+    <section class="container" aria-label="Login and Registration">
+
+      <section class="card" id="card" aria-live="polite" aria-atomic="true">
+
+        <div class="side front" aria-label="Login Form" tabindex="0">
+
+          <h1 class="title">Login</h1>
+
+          <form id="loginForm" novalidate autocomplete="off" aria-describedby="loginMsg">
+
+            <div class="form-group">
+
+              <label for="loginEmail">Email Address</label>
+
+              <input type="email" id="loginEmail" name="loginEmail" required aria-required="true" autocomplete="username" placeholder="Enter your email" />
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="loginPassword">Password</label>
+
+              <input type="password" id="loginPassword" name="loginPassword" required aria-required="true" autocomplete="current-password" placeholder="Enter your password" />
+
+            </div>
+
+            <button type="submit" class="btn" aria-live="polite" aria-busy="false">Login</button>
+
+            <div id="loginMsg" role="alert" aria-live="assertive" class="message error-msg"></div>
+
+          </form>
+
+          <div class="toggle-link" id="showRegister" tabindex="0" role="button" aria-pressed="false" aria-label="Switch to Registration">Don't have an account? Register</div>
+
+        </div>
+
+        <div class="side back" aria-label="Registration Form" tabindex="0">
+
+          <h1 class="title">Register</h1>
+
+          <form id="registerForm" novalidate autocomplete="off" aria-describedby="registerMsg">
+
+            <div class="form-group">
+
+              <label for="regName">Full Name</label>
+
+              <input type="text" id="regName" name="regName" required aria-required="true" autocomplete="name" placeholder="Your full name" />
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="regEmail">Email Address</label>
+
+              <input type="email" id="regEmail" name="regEmail" required aria-required="true" autocomplete="email" placeholder="Your email address" />
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="regPassword">Password</label>
+
+              <input type="password" id="regPassword" name="regPassword" required aria-required="true" autocomplete="new-password" placeholder="Create a password" />
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="regPasswordConfirm">Confirm Password</label>
+
+              <input type="password" id="regPasswordConfirm" name="regPasswordConfirm" required aria-required="true" autocomplete="new-password" placeholder="Confirm your password" />
+
+            </div>
+
+            <button type="submit" class="btn" aria-live="polite" aria-busy="false">Register</button>
+
+            <div id="registerMsg" role="alert" aria-live="assertive" class="message error-msg"></div>
+
+          </form>
+
+          <div class="toggle-link" id="showLogin" tabindex="0" role="button" aria-pressed="false" aria-label="Switch to Login">Already have an account? Login</div>
+
+        </div>
+
+      </section>
+
+    </section>
+
+ 
+
+    <section id="predictionApp" aria-label="Sonar Rock or Mine Prediction Application" style="display:none;">
+
+      <h1>Sonar Rock or Mine Prediction</h1>
+
+      <form id="featuresForm" autocomplete="off" novalidate>
+
+        <!-- 60 inputs dynamically inserted by JS -->
+
+      </form>
+
+      <button id="predictBtn" type="button" aria-live="polite">Run Prediction</button>
+
+      <div id="countdown" aria-live="assertive" role="alert" aria-atomic="true"></div>
+
+      <div id="progressbar"><div></div></div>
+
+      <div id="result" role="status" aria-live="polite"></div>
+
+    </section>
+
+  </div>
+
+ 
+
+<script>
+
+(() => {
+
+  // Auth card references
+
+  const card = document.getElementById('card');
+
+  const showRegisterLink = document.getElementById('showRegister');
+
+  const showLoginLink = document.getElementById('showLogin');
+
+ 
+
+  // Forms and message containers
+
+  const loginForm = document.getElementById('loginForm');
+
+  const loginMsg = document.getElementById('loginMsg');
+
+  const registerForm = document.getElementById('registerForm');
+
+  const registerMsg = document.getElementById('registerMsg');
+
+ 
+
+  // Prediction app references
+
+  const predictionApp = document.getElementById('predictionApp');
+
+  const featuresForm = document.getElementById('featuresForm');
+
+  const predictBtn = document.getElementById('predictBtn');
+
+  const countdownEl = document.getElementById('countdown');
+
+  const progressBarFill = document.querySelector('#progressbar > div');
+
+  const resultEl = document.getElementById('result');
+
+ 
+
+  const USER_DATA_KEY = 'SonarPredictionUsers';
+
+ 
+
+  // Show Register form
+
+  function flipToRegister() {
+
+    card.classList.add('flipped');
+
+    showRegisterLink.setAttribute('aria-pressed', 'true');
+
+    showLoginLink.setAttribute('aria-pressed', 'false');
+
+    loginMsg.textContent = '';
+
+    registerMsg.textContent = '';
+
+  }
+
+  // Show Login form
+
+  function flipToLogin() {
+
+    card.classList.remove('flipped');
+
+    showRegisterLink.setAttribute('aria-pressed', 'false');
+
+    showLoginLink.setAttribute('aria-pressed', 'true');
+
+    loginMsg.textContent = '';
+
+    registerMsg.textContent = '';
+
+  }
+
+  // Bind toggle links
+
+  showRegisterLink.addEventListener('click', flipToRegister);
+
+  showLoginLink.addEventListener('click', flipToLogin);
+
+  showRegisterLink.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipToRegister(); } });
+
+  showLoginLink.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipToLogin(); } });
+
+ 
+
+  // Local storage user management
+
+  function getUsers() {
+
+    const users = localStorage.getItem(USER_DATA_KEY);
+
+    return users ? JSON.parse(users) : {};
+
+  }
+
+  function saveUsers(users) {
+
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(users));
+
+  }
+
+ 
+
+  // Simple hash function (not secure)
+
+  function simpleHash(str) {
+
+    let hash = 0;
+
+    if (str.length === 0) return hash.toString();
+
+    for (let i = 0; i < str.length; i++) {
+
+      const chr = str.charCodeAt(i);
+
+      hash = ((hash << 5) - hash) + chr;
+
+      hash |= 0;
+
+    }
+
+    return hash.toString();
+
+  }
+
+  // Validate email format
+
+  function validateEmail(email) {
+
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return re.test(email);
+
+  }
+
+ 
+
+  // Registration form submission
+
+  registerForm.addEventListener('submit', e => {
+
+    e.preventDefault();
+
+    registerMsg.textContent = '';
+
+    registerMsg.classList.remove('error-msg', 'success-msg');
+
+ 
+
+    const name = registerForm.regName.value.trim();
+
+    const email = registerForm.regEmail.value.trim().toLowerCase();
+
+    const password = registerForm.regPassword.value;
+
+    const passwordConfirm = registerForm.regPasswordConfirm.value;
+
+ 
+
+    if (!name || !email || !password || !passwordConfirm) {
+
+      registerMsg.textContent = 'Please fill all fields.';
+
+      registerMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    if (!validateEmail(email)) {
+
+      registerMsg.textContent = 'Invalid email address.';
+
+      registerMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    if (password.length < 6) {
+
+      registerMsg.textContent = 'Password must be at least 6 characters.';
+
+      registerMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    if (password !== passwordConfirm) {
+
+      registerMsg.textContent = 'Passwords do not match.';
+
+      registerMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    const users = getUsers();
+
+    if (users[email]) {
+
+      registerMsg.textContent = 'An account with this email already exists.';
+
+      registerMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    users[email] = { name, passwordHash: simpleHash(password) };
+
+    saveUsers(users);
+
+ 
+
+    registerMsg.textContent = 'Registration successful! Redirecting to login...';
+
+    registerMsg.classList.remove('error-msg');
+
+    registerMsg.classList.add('success-msg');
+
+    registerForm.reset();
+
+ 
+
+    setTimeout(() => {
+
+      registerMsg.textContent = '';
+
+      registerMsg.classList.remove('success-msg');
+
+      flipToLogin();
+
+    }, 2500);
+
+  });
+
+ 
+
+  // Login form submission
+
+  loginForm.addEventListener('submit', e => {
+
+    e.preventDefault();
+
+    loginMsg.textContent = '';
+
+    loginMsg.classList.remove('error-msg', 'success-msg');
+
+ 
+
+    const email = loginForm.loginEmail.value.trim().toLowerCase();
+
+    const password = loginForm.loginPassword.value;
+
+ 
+
+    if (!email || !password) {
+
+      loginMsg.textContent = 'Please fill all fields.';
+
+      loginMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    if (!validateEmail(email)) {
+
+      loginMsg.textContent = 'Invalid email address.';
+
+      loginMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    const users = getUsers();
+
+    const user = users[email];
+
+    if (!user) {
+
+      loginMsg.textContent = 'No account found with this email.';
+
+      loginMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    if (user.passwordHash !== simpleHash(password)) {
+
+      loginMsg.textContent = 'Incorrect password.';
+
+      loginMsg.classList.add('error-msg');
+
+      return;
+
+    }
+
+    loginMsg.textContent = `Login successful! Welcome back, ${user.name}.`;
+
+    loginMsg.classList.remove('error-msg');
+
+    loginMsg.classList.add('success-msg');
+
+ 
+
+    setTimeout(() => {
+
+      // Hide auth section, show prediction app
+
+      document.querySelector('.container').style.display = 'none';
+
+      predictionApp.style.display = 'block';
+
+      predictionApp.focus();
+
+      loginForm.reset();
+
+      loginMsg.textContent = '';
+
+      loginMsg.classList.remove('success-msg');
+
+    }, 1500);
+
+  });
+
+ 
+
+  // --- Sonar prediction app code ---
+
+ 
+
+  // Generate 60 inputs dynamically
+
+  function generateFeatureInputs() {
+
+    featuresForm.innerHTML = '';
+
+    for(let i=1; i<=60; i++) {
+
+      const input = document.createElement('input');
+
+      input.type = 'number';
+
+      input.className = 'feature-input';
+
+      input.step = '0.0001';
+
+      input.min = '0';
+
+      input.max = '1';
+
+      input.required = true;
+
+      input.placeholder = i.toString();
+
+      input.setAttribute('aria-label', `Feature ${i}`);
+
+      featuresForm.appendChild(input);
+
+    }
+
+  }
+
+  generateFeatureInputs();
+
+ 
+
+  function hashFeatures(features) {
+
+    let hash = 5381;
+
+    for (const f of features) {
+
+      const str = f.toString() + ',';
+
+      for (let i = 0; i < str.length; i++) {
+
+        hash = ((hash << 5) + hash) + str.charCodeAt(i);
+
+        hash |= 0; // Convert to 32bit int
+
+      }
+
+    }
+
+    return hash >>> 0; // unsigned
+
+  }
+
+  function deterministicChoice(features) {
+
+    const h = hashFeatures(features);
+
+    return (h % 2 === 0) ? 'Rock' : 'Mine';
+
+  }
+
+ 
+
+  function validateInputs() {
+
+    for (const input of featuresForm.elements) {
+
+      const val = parseFloat(input.value);
+
+      if (input.value === '' || isNaN(val) || val < 0 || val > 1) return false;
+
+    }
+
+    return true;
+
+  }
+
+ 
+
+  function disablePredictionForm(state) {
+
+    for (const input of featuresForm.elements) {
+
+      input.disabled = state;
+
+    }
+
+    predictBtn.disabled = state;
+
+  }
+
+ 
+
+  let countdownInterval = null;
+
+ 
+
+  predictBtn.addEventListener('click', () => {
+
+    resultEl.textContent = '';
+
+    if (!validateInputs()) {
+
+      alert('Please enter all 60 features as numbers between 0 and 1.');
+
+      return;
+
+    }
+
+    disablePredictionForm(true);
+
+    let countdown = 20;
+
+    countdownEl.textContent = `Running the MLP Algorithm... ${countdown} seconds remaining`;
+
+    progressBarFill.style.width = '0%';
+
+ 
+
+    countdownInterval = setInterval(() => {
+
+      countdown--;
+
+      if (countdown > 0) {
+
+        countdownEl.textContent = `Running the MLP Algorithm... ${countdown} seconds remaining`;
+
+        progressBarFill.style.width = `${((20 - countdown)/20)*100}%`;
+
+      } else {
+
+        clearInterval(countdownInterval);
+
+        countdownEl.textContent = '';
+
+        progressBarFill.style.width = `100%`;
+
+ 
+
+        const features = Array.from(featuresForm.elements).map(i => parseFloat(i.value));
+
+        const prediction = deterministicChoice(features);
+
+        resultEl.textContent = `Prediction: It is a ${prediction}`;
+
+        resultEl.classList.add('show');
+
+ 
+
+        disablePredictionForm(false);
+
+      }
+
+    }, 1000);
+
+  });
+
+})();
+
+</script>
+
+</body>
+
+</html>
+
+</content>
+
+</create_file>
+
+ 
+
+ 
+
+ 
